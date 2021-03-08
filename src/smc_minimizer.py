@@ -8,11 +8,11 @@ from src.ess_solver import ess_solver
 from src.resampling import systematic
 from src.utils import normalize
 import enum
-from tensorflow_probability.substrates.jax.mcmc import sample_chain, RandomWalkMetropolis
+from tensorflow_probability.substrates.jax.mcmc import sample_chain, RandomWalkMetropolis, HamiltonianMonteCarlo
 
 
 def _default_kernel(log_prob_fn):
-    return RandomWalkMetropolis(log_prob_fn)
+    return HamiltonianMonteCarlo(log_prob_fn, step_size=1e-3, num_leapfrog_steps=10)
 
 
 def infinitely_tempered_smc(potential,
@@ -28,6 +28,7 @@ def infinitely_tempered_smc(potential,
                             ):
     key, subkey = split(PRNGKey(seed))
     init_particles = m0(num_particles, subkey)
+
     def cond(carry):
         i, *_, delta_i, _ = carry
         return jnp.logical_and(delta_i < max_delta, i < max_n)
@@ -77,7 +78,10 @@ def infinitely_tempered_smc(potential,
 if __name__ == '__main__':
     from jax.random import normal
     import matplotlib.pyplot as plt
-    D = 10
+
+    D = 100
+
+
     def potential(x):
         return jnp.sum((x - 1) ** 2, -1)
 
@@ -86,7 +90,7 @@ if __name__ == '__main__':
         return 10. * normal(key, (n, D))
 
 
-    n, res, lambda_n, mean_accepted_n = infinitely_tempered_smc(potential, 10000, 0.75, m0, num_results=500, max_delta=1e3)
+    n, res, lambda_n, mean_accepted_n = infinitely_tempered_smc(potential, 100, 0.75, m0, num_results=50,
+                                                                max_delta=1e3)
     print(res.mean(0))
     print(res.std(0))
-
