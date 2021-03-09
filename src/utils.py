@@ -1,7 +1,5 @@
-import jax.numpy as jnp
-import scipy.optimize
-from jax import numpy as jnp, jit, grad
 import numpy as np
+from jax import numpy as jnp, jit, grad
 from jax.experimental.host_callback import id_print
 from jax.lax import while_loop
 
@@ -23,7 +21,7 @@ def ess(log_weights):
     return w.sum() ** 2 / jnp.square(w).sum()
 
 
-def newton(fun, x0, ftol=1e-5, gtol=1e-3, max_iter=30):
+def newton(fun, x0, ftol=1e-5, gtol=1e-3, max_iter=100):
     """
     A simple Newton-Raphston method.
 

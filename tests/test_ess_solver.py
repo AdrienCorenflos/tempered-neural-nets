@@ -1,5 +1,5 @@
-import pytest
 import numpy as np
+import pytest
 
 from src.ess_solver import ess_solver
 
@@ -13,5 +13,5 @@ def test(ess_target, seed):
         return x ** 2
 
     particles = rng.uniform(-1, 1, (5000,))
-    res = ess_solver(particles, ess_target, potential, 1.)
+    res = ess_solver(particles, ess_target, potential)
     print(res)
