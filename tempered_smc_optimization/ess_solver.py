@@ -2,10 +2,10 @@ import jax.numpy as jnp
 from jax.lax import while_loop
 from tensorflow_probability.substrates.jax.math import find_root_chandrupatla
 
-from src.utils import ess
+from tempered_smc_optimization.utils import ess
 
 
-def ess_solver(particles, ess_target, potential):
+def ess_solver(particles, ess_target, potential, key, n):
     """
 
     Parameters
@@ -24,8 +24,7 @@ def ess_solver(particles, ess_target, potential):
     >>> ess_solver(particles, 0.5, potential)
 
     """
-    potential_val = potential(particles)
-    n = particles.shape[0]
+    potential_val = potential(*particles, k=key)
 
     def fun_to_minimize(delta):
         ess_val = ess(-delta * potential_val)
@@ -47,8 +46,4 @@ def ess_solver(particles, ess_target, potential):
     b, _ = while_loop(cond, body, (b0, 1.))
     delta = find_root_chandrupatla(fun_to_minimize, 0., b, value_tolerance=1e-2)
     return delta.estimated_root
-    # try:
-    #     return call(host_call_function, (),
-    #                 result_shape=ShapeDtypeStruct((), potential_val.dtype))
-    # except ValueError:
-    #     return max_delta
+

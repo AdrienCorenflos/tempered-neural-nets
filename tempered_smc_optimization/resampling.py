@@ -1,6 +1,7 @@
 import jax.numpy as jnp
 from jax.random import uniform
 
+
 def stratified(weights, key):
     """
     Stratified resampling method

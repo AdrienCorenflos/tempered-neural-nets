@@ -1,6 +1,5 @@
 import numpy as np
 from jax import numpy as jnp, jit, grad
-from jax.experimental.host_callback import id_print
 from jax.lax import while_loop
 
 
@@ -89,3 +88,7 @@ def normalize(log_weights):
     """
     w = jnp.exp(log_weights - jnp.max(log_weights))
     return w / w.sum()
+
+
+
+
